@@ -1,10 +1,10 @@
 # msync
 Current personal project.
 
-#Purpose
+# Purpose
 Create spotify playlists based on track/artist preferences
 
-#Utilizes
+# Utilizes
 API built using Flask (Currently local, and not public)
 JavaFX
 Angular Website
