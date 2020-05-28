@@ -1,5 +1,6 @@
 package sample;
 
+import Networking.AuthHandler;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,6 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.json.simple.JSONObject;
@@ -26,12 +28,16 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.io.File;
 
-import Networking.AuthenticationHandler;
-
 public class Main extends Application implements EventHandler<ActionEvent> {
 
     Font titleFont = new Font("Times New Roman", 26);
     Font otherFont = new Font("Times New Roman", 18);
+
+    /**
+     * User passed parameters
+     */
+    String[] artistArr;
+    String[] trackArr;
 
     /**
      * User Related Information
@@ -115,7 +121,6 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 
         try{
 
-            loadUserCreds();
             PrintWriter pw = new PrintWriter("user_credentials.json");
             pw.write(userCreds.toJSONString());
 
@@ -138,6 +143,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 
         if(userFile.exists()){
 
+            System.out.println("File exists");
             loadUserCreds();
 
         }else{
@@ -291,9 +297,10 @@ public class Main extends Application implements EventHandler<ActionEvent> {
         if(!codeText.getText().trim().isEmpty()){
 
             userCreds.put("code", codeText.getText());
-            saveUserCreds();
 
         }
+
+        saveUserCreds();
 
         System.exit(1);
 
@@ -321,14 +328,63 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 
         if(source == submit){
 
-            AuthenticationHandler sendRequest = new AuthenticationHandler();
+            artistArr = new String[artistVBox.getChildren().size()];
+
+            int i = 0;
+            for(var node : artistVBox.getChildren()){
+
+                TextField inputField;
+                try{
+
+                    inputField = (TextField) node;
+                    if(!(inputField.getText().isEmpty())){
+
+                        artistArr[i++] = inputField.getText();
+                        System.out.println(inputField.getText());
+
+                    }
+
+                }catch (Exception e){
+
+                    //Input is not textfield, continue
+
+                }
+
+            }
+
+            trackArr = new String[trackVBox.getChildren().size()];
+
+            i = 0;
+            for(var node : trackVBox.getChildren()){
+
+                TextField inputField;
+                try{
+
+                    inputField = (TextField) node;
+                    if(!(inputField.getText().isEmpty())){
+
+                        trackArr[i++] = inputField.getText();
+                        System.out.println(inputField.getText());
+
+                    }
+
+                }catch (Exception e){
+
+                    //Input is not textfield, continue
+
+                }
+
+            }
 
             userCreds.put("code", codeText.getText());
             saveUserCreds();
 
-            sendRequest.AuthenticateUser();
+            //AuthenticationHandler sendRequest = new AuthenticationHandler(artistArr, trackArr);
+            AuthHandler request = new AuthHandler(userCreds, artistArr, trackArr);
 
-            System.out.println(sendRequest.makeRequest());
+            System.out.println(request.makeRequest());
+            saveUserCreds();
+
 
         }else if(source == addArtist){
 
